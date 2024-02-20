@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
             throw Error("Password is incorrect")
         }
 
-        const token = createToken(user.i_id);
+        const token = createToken(user._id);
 
         return res.status(200).json({username, token});
     } catch (error) {
