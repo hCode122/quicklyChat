@@ -11,7 +11,7 @@ export default function useFetchChats() {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    "authenication": "bearer" + token.split('.')[1]
+                    "Authorization": "bearer " + token
                 },
             }).then(response => response.json() ).then(
                 data => {console.log(data);}
