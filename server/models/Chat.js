@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 const ChatSchema = new mongoose.Schema({
-    senderId: {type: String, required: true},
-    chatId: {type: String, required: true},
-    recId: {type: String, required: true},
-    Messages: {type: Array}
+    senderId: {type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true},
+    chatId: {type: mongoose.Schema.Types.ObjectId, ref: 'chat', required: true},
+    recId: {type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true},
+    Messages: [{ type : mongoose.Schema.Types.ObjectId, ref: 'chat' }]
 })
 
 export const ChatModel = mongoose.model("chat", ChatSchema);
