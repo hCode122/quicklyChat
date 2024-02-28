@@ -12,8 +12,14 @@ module.exports = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "userPic1":"url('/images/camera.svg')"
+        "userPic1":"url('/images/user.svg')"
       },
+      backgroundColor: {
+        "black-2": "#212121"
+      },
+      color: {
+        "black-2": "#212121"
+      }
     },
   },
   plugins: [],
