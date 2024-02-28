@@ -5,57 +5,66 @@ import { useRouter } from 'next/navigation'
 import { useLogout } from "../../hooks/useLogout";
 import Image from "next/image";
 import start from "../../hooks/useSocket"
-import { fetchChats } from "../../hooks/fetchChats";
+import useFetchChats from "../../hooks/useFetchChats";
+import useFetchContacts from "../../hooks/useFetchContacts";
+
 
 export default function MainUi() {
   const [chats, setChats] = useState([]);
   const [contacts, setcontacts] = useState([]);
+  const [selected, setUi] = useState("chats")
+
   const router = useRouter();
   const {logout} = useLogout();
 
-  
   const {user} = useAuthContext();
-
+ 
   const socket = start()
-
+  const fetchChats = useFetchChats();
+  const fetchContacts = useFetchContacts();
+  
   useEffect(() => {
-    if (user == null) {
-      router.push("/auth")
-      } else {
-        console.log(123)
-        setChats(fetchChats(user))
-        console.log(chats)
-      }
-  }, [user])
+    if (user) {
+        switch (selected) {
+          case "chats":
+            fetchChats(user.token)
+            break;
+          case "contacts":
+            fetchContacts(user.token)
+          case "groups":
 
+          default:
+            break;
+        }
+        
+      } else {
+        router.push("/auth")
+      }
+      
+  }, [user, selected])
   
   return (
 
-    <ChatsComponent>
-      <ChatCard name="bob" time="19:15" lastMsg="Testing the texting, ha haaaaaaaaaaaaaaa!."></ChatCard>
-      <ChatCard name="سالم" time="19:15" lastMsg="كيفك "></ChatCard>
+    <ChatsComponent selected={selected} setUi={setUi}>
+      <ChatCard name={"Ahmad"} time={"19:20"} lastMsg={"كيفك شو الأخبار"}></ChatCard>
+      <ChatCard name={"Alaa"} time={"08:00"} lastMsg={"Tesssst"}></ChatCard>
+
     </ChatsComponent>
-  
+
     
   )
 }
 
-const fetchData = async (user, setContacts, setChats) => {
- 
-  await fetch("http://localhost:3001/api/data",{
-    headers: {
-      "Authorization": "Bearer" + user.token
-    }}).then(response => response.json()).then(data =>
-      console.log(data)
+const renderChat = (data) => {
+  data.forEach(element => {
+    return(
+      <ChatCard name={element.name} time={element.time} lastMsg={element.lastMsg}></ChatCard>
     )
-  
+  });
 }
 
-const ChatsComponent = (props) => {
+const ChatsComponent = ({selected, setUi, children}) => {
 
-  const [selected, setUi] = useState("chats")
-
-  
 
   return (
     <div className="h-screen flex flex-col bg-black-2">
@@ -89,7 +98,7 @@ const ChatsComponent = (props) => {
       </div>
 
       <div id="main" className="bg-white flex flex-col flex-1">
-        {props.children}
+        {children}
       </div>
     </div>
   )
