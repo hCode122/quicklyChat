@@ -10,9 +10,18 @@ export const metadata = {
 
 const MainLayout =({ children }) => {
   return(
-    <div className="bg-indigo-700">
+    <div className={"flex flex-col h-screen"}>
       { children }
+      <Footer></Footer>
     </div>
+  )
+}
+
+const Footer = () => {
+  return (
+    <footer className="bg-black-2 p-0 text-orange-500 font-light font-sm text-center">
+      HCode122 - 2024 - All rights reserved
+    </footer>
   )
 }
 
@@ -22,7 +31,7 @@ export default function RootLayout({ children }) {
       <body>
         <AuthContextProvider>
           <MainLayout>
-              <main>{children}</main>
+              {children}
               </MainLayout> 
         </AuthContextProvider>
 
