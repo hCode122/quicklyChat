@@ -7,5 +7,7 @@ router.use(requireAuth);
 /* GET home page. */
 
 router.get("/contacts", mainController.getContacts)
+router.post("/contacts", mainController.addContact)
 
+router.get("/chats", mainController.getChats)
 module.exports = router;
