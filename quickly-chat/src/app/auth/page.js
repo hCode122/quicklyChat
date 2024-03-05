@@ -13,7 +13,8 @@ const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const {dispatch,user} = useAuthContext();
-    useEffect(() => {if (user != null) {
+    useEffect(() => {
+        if (user) {
         router.push("/")
         }
     }, [user])
