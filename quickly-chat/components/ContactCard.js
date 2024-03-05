@@ -1,5 +1,9 @@
-const ContactCard = ({name}) => {  
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+const ContactCard = ({name}) => { 
+
     return (
+        <Link href={"/chat"}>
       <div className="clickable flex-initial border-b-4 border-black bg-orange-500
       flex gap-2 flex-row h-16">
         <div className="bg-userPic1 bg-white border-2 border-black rounded-2xl  w-12 h-12 flex-initial mt-2  ml-2">
@@ -16,7 +20,11 @@ const ContactCard = ({name}) => {
             
         </div>
       </div>
+      </Link>
     )
 }
+
+
+
 
 export default ContactCard;
