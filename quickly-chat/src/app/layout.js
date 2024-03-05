@@ -12,7 +12,6 @@ const MainLayout =({ children }) => {
   return(
     <div className={"flex flex-col h-screen"}>
       { children }
-      <Footer></Footer>
     </div>
   )
 }
