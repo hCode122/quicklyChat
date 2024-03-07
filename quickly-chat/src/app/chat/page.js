@@ -1,10 +1,22 @@
 'use client'
-
-import { useState } from "react";
+import { useSearchParams } from 'next/navigation';
+import { useContext, useEffect, useState } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
-
+import connectSocket from "../../../hooks/useSocket";
+import { useTargetContext } from '../../../hooks/useTargetContext';
 const ChatWindow = () => {
+    const {target} = useTargetContext()
+    
+    console.log(target)
+    const [socket, setSocket] = useState()
     const {user} = useAuthContext()
+    useEffect(() => {
+        if (user)
+        {
+            const socket = connectSocket()     
+            setSocket(socket)      
+        }
+    },[user])
     
     if (user) {
     return(
@@ -18,7 +30,7 @@ const ChatWindow = () => {
             <div className="bg-black flex-1 overflow-scroll">
                 
             </div>
-            <WriteArea></WriteArea>
+            <WriteArea socket={socket} user={user.username}></WriteArea>
         </div>
     )
     }
@@ -34,22 +46,22 @@ const TextArea = () => {
     )
 }
 
-const WriteArea = () => {
+const WriteArea = ({socket, user}) => {
     const [msg, setMsg] = useState("")
     const submit = (event) => {
         event.preventDefault()
-
+        socket.emit("send-message", msg, user)
 
     }
 
     return (
       
-        <form className="flex items-center gap-4  border-t border-orange-500
+        <form onSubmit={submit} className="flex items-center gap-4  border-t border-orange-500
          rounded-t-lg justify-evenly bg-red-2 min-h-16">
             <textarea name="msg" value={msg} onChange={(e) => setMsg(e.target.value)} 
             className="rounded-lg bg- border-orange-500 border-2 block min-h-8
             flex-1 max-w-sm overflow-auto ml-4 text-sm input"></textarea>
-            <submit><img className="h-8 w-8 mr-2" src="/images/send.svg"></img></submit>
+            <button type="submit"><img className="h-8 w-8 mr-2" src="/images/send.svg"></img></button>
         </form>
     )
 }
