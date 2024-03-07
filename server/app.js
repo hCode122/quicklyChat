@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var env = require('dotenv').config();
 var mongoose = require('mongoose')
-
+var io = require("socket.io")(3003)
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 
@@ -25,6 +25,13 @@ async function main() {
   }))
 }
 
+// socket connection
+io.on("connection", socket => {
+  console.log(socket.id)
+  socket.on("send-message", (message, user) => {
+    console.log(message + " by " + user)
+  })
+})
 
 app.use(logger('dev'));
 app.use(express.json());
