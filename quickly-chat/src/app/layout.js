@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import {AuthContextProvider}  from "../../context/authContext";
+import { TargetContextProvider } from "../../context/targetContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -29,9 +30,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <AuthContextProvider>
+          <TargetContextProvider>
           <MainLayout>
               {children}
               </MainLayout> 
+              </TargetContextProvider>
         </AuthContextProvider>
 
       </body>
