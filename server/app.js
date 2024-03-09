@@ -5,10 +5,10 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var env = require('dotenv').config();
 var mongoose = require('mongoose')
-var io = require("socket.io")(3003)
+
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
-
+var cors = require("cors")
 var app = express();
 
 // view engine setup
@@ -17,7 +17,7 @@ app.set('view engine', 'jade');
 
 // Database connection
 const dbURI = process.env.DB_URI;
-
+app.use(cors())
 main().catch((err) => console.log(err));
 async function main() {
   (await mongoose.connect(dbURI, {dbName:'Cluster0'}).then(() => {
@@ -25,13 +25,7 @@ async function main() {
   }))
 }
 
-// socket connection
-io.on("connection", socket => {
-  console.log(socket.id)
-  socket.on("send-message", (message, user) => {
-    console.log(message + " by " + user)
-  })
-})
+
 
 app.use(logger('dev'));
 app.use(express.json());
