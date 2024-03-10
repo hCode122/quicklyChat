@@ -15,7 +15,8 @@ module.exports = {
         "userPic1":"url('/images/user.svg')"
       },
       backgroundColor: {
-        "black-2": "#212121"
+        "black-2": "#212121",
+        "black-3": "#282828"
       },
       color: {
         "black-2": "#212121"
