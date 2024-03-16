@@ -25,6 +25,35 @@ async function main() {
   }))
 }
 
+var io = require("socket.io")(3003,{
+  cors: {
+    origin: '*',
+  }
+})
+const globalUsers = new Map();
+// socket connection
+io.on("connection", socket => {
+    socket.on("register", (name, id) => {
+      if (globalUsers.has(id)) {
+        console.log("User already exist")
+      } else {
+        globalUsers.set(name, id)
+        console.log(globalUsers)
+      }
+    })
+
+    socket.on("send-message", (message, target) => {
+      console.log("received a message, sending....")
+      const room = globalUsers.get(target)
+      socket.to(room).emit("receive-message", message)
+    })
+
+    socket.on("leave",(name) => {
+      globalUsers.delete(name)
+      console.log("deleted")
+    })
+  })
+
 
 
 app.use(logger('dev'));
