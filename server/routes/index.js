@@ -9,5 +9,7 @@ router.use(requireAuth);
 router.get("/contacts", mainController.getContacts)
 router.post("/contacts", mainController.addContact)
 
+router.post("/search", mainController.search)
+
 router.get("/chats", mainController.getChats)
 module.exports = router;
