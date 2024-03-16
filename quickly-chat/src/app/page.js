@@ -3,35 +3,55 @@ import { useEffect, useState } from "react"
 import { useAuthContext } from "../../hooks/useAuthContext"
 import { useRouter } from 'next/navigation'
 import { useLogout } from "../../hooks/useLogout";
-import start from "../../hooks/useSocket"
+import { io } from "socket.io-client";
 import useFetchChats from "../../hooks/useFetchChats";
 import useFetchContacts from "../../hooks/useFetchContacts";
-import ContactCard from "../../components/ContactCard";
-import ChatCard from "../../components/ChatCard";
-import MainComp from "../../components/MainComp";
-import { render } from "react-dom";
+import ContactCard from "../components/ContactCard";
+import ChatCard from "../components/ChatCard";
+import MainComp from "../components/MainComp";
+import { useTargetContext } from "../../hooks/useTargetContext";
+
 
 export default function MainUi() {
   const [selected, setUi] = useState("chats")
   const [loggedUsr, setUsr] = useState("null")
   const router = useRouter();
-  const {user} = useAuthContext();
- 
-  const socket = start()
+  
   const [contacts, setContacts] = useState([])  
   const [chats, setChats] = useState([])  
 
- 
+  
+  const {user} = useAuthContext();
+  const {setSoc} = useTargetContext()
   useEffect(() => {
     if (user) {
       setUsr(user)
+      const socket = io('http://localhost:3003')
+
+      const connect = () => {
+        console.log('connecting')
+        socket.emit("register", user.username, socket.id)
+      }
+
+      const disconnect = () => {
+        socket.emit("leave",user.token)
+      }
+      socket.on("connect", connect)
+      socket.on("disconnect", disconnect)
+
+      setSoc(socket)
+
+      return () => {
+        socket.off('connect', connect);
+        socket.off('disconnect', disconnect);
+      }
+
       } else {
         router.push("/auth")
-      }
+    }
       
-  }, [user])
+  },[])
   
-
 
   const fetchContacts = useFetchContacts()
   const fetchChats = useFetchChats();
@@ -40,11 +60,6 @@ export default function MainUi() {
       if (loggedUsr.token != null) {
         const fetchedContacts = await fetchContacts(loggedUsr.token);
         const fetchedChats = await fetchChats(loggedUsr.token);
-        console.log("chats")
-        console.log(fetchedChats)
-        console.log("contacts")
-        console.log(fetchedContacts)
-
         setContacts(fetchedContacts)
         setChats(fetchedChats)
       }
