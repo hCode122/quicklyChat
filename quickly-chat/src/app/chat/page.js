@@ -4,61 +4,75 @@ import { useContext, useEffect, useState } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import connectSocket from "../../../hooks/useSocket";
 import { useTargetContext } from '../../../hooks/useTargetContext';
+
+
 const ChatWindow = () => {
-    const {target} = useTargetContext()
-    
-    console.log(target)
-    const [socket, setSocket] = useState()
+    const {target, socket} = useTargetContext()
+    const [msgs, setMsg] = useState([])
     const {user} = useAuthContext()
-    useEffect(() => {
-        if (user)
-        {
-            const socket = connectSocket()     
-            setSocket(socket)      
-        }
-    },[user])
     
+    
+    useEffect(() => {
+        const receive = message => {
+            setMsg((msgs) => [...msgs, message]);
+        }
+        socket.on("receive-message", receive);
+        return () => socket.off("receive-message",receive);
+    }, [])
+
+    
+
     if (user) {
-    return(
-        <div className="flex bg-black-2 flex-col h-screen">
-            <div className="border-black border-2 flex flex-initial items-center h-24">
-                <img src="/images/user2.svg" className="ml-4 rounded-full border-orange-500 border-2 
-                flex-initial w-20 h-20"></img>
-                <p className="h-12 text-lg font-bold text-orange-500 ml-8">{user.username}</p>
-            </div>
-            
-            <div className="bg-black flex-1 overflow-scroll">
+        return(
+            <div className="flex bg-black-2 flex-col h-screen">
+                <div className="border-black border-2 flex flex-initial items-center h-24">
+                    <img src="/images/user2.svg" className="ml-4 rounded-full border-orange-500 border-2 
+                    flex-initial w-20 h-20"></img>
+                    <p className="h-12 text-lg font-bold text-orange-500 ml-8">{target}</p>
+                </div>
                 
+                
+                <TextArea user={user} msgs={msgs} setMsg={setMsg} socket={socket}></TextArea>
+                
+                <WriteArea user={user} msgs={msgs} setMsg={setMsg} socket={socket} target={target}></WriteArea>
             </div>
-            <WriteArea socket={socket} user={user.username}></WriteArea>
-        </div>
-    )
+        )
     }
 }
 
-const TextArea = () => {
-    
-
+const TextArea = ({socket, msgs, setMsg, user}) => {
     return (
-        <div>
-
+        <div className="bg-black flex-1 text-white flex flex-col gap-2 overflow-scroll">
+           {msgs.map((msg, index) => {
+            return <Message key={index} username={user.username} msg={msg}></Message>
+           })}
         </div>
     )
 }
 
-const WriteArea = ({socket, user}) => {
-    const [msg, setMsg] = useState("")
+const Message = ({msg, username}) => {
+
+    return (
+        <div className={(msg.sender == username) ? 'sent' : "received"} >{msg.text}</div>
+    )
+}
+
+const WriteArea = ({socket, target, msgs, setMsg, user}) => {
+    const [text, setTxt] = useState("")
     const submit = (event) => {
         event.preventDefault()
-        socket.emit("send-message", msg, user)
-
+        const newMsg = {text:text, sender:user.username}
+        setMsg((msgs) => [...msgs, newMsg])
+        socket.emit("send-message", newMsg, target)
+        
+        setTxt("")
     }
 
     return (
       
-        <form onSubmit={submit} className="flex items-center gap-4  border-t border-orange-500
+        <form onSubmit={(e) => submit(e)} className="flex items-center gap-4  border-t border-orange-500
          rounded-t-lg justify-evenly bg-red-2 min-h-16">
-            <textarea name="msg" value={msg} onChange={(e) => setMsg(e.target.value)} 
+            <textarea name="msg" value={text} onChange={(e) => setTxt(e.target.value)} 
             className="rounded-lg bg- border-orange-500 border-2 block min-h-8
             flex-1 max-w-sm overflow-auto ml-4 text-sm input"></textarea>
             <button type="submit"><img className="h-8 w-8 mr-2" src="/images/send.svg"></img></button>
