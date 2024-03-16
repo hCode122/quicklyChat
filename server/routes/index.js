@@ -12,4 +12,6 @@ router.post("/contacts", mainController.addContact)
 router.post("/search", mainController.search)
 
 router.get("/chats", mainController.getChats)
+router.post("/chats", mainController.createChat)
+
 module.exports = router;
