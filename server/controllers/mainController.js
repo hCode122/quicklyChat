@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const User = require("../models/User")
-const Chat = require("../models/User")
+const Chat = require("../models/Chat")
 
 exports.getContacts = async (req, res) => {
     const _id = req.user;
@@ -75,4 +75,24 @@ exports.getChats = async (req, res) => {
     } catch (error) {
         console.log(error)
     }
+}
+
+exports.createChat = async (req, res) => {
+    const {sendName, recName} = req.body;
+    
+    const newChat = {
+        sendName: sendName,
+        recName: recName,
+        Messages: []
+    }
+
+    try {
+        await Chat.create(newChat).then(
+            () => {res.status(200)});
+    } catch (e) {
+        return console.log(e)
+    }
+
+
+
 }
