@@ -20,19 +20,34 @@ exports.getContacts = async (req, res) => {
     
 }
 
+exports.search = async (req, res) => {
+    const user = req.user
+    const {search} = req.body
+
+    try {
+        const data = await User.find({name: {$regex: '^'+search, $options: 'i'}})
+
+        if (data) return res.status(200).json(data)
+        else return res.status(404)
+    } catch (e) {
+        console.log(e)
+    }
+} 
+
 exports.addContact = async (req, res) => {
     const user = req.user
-    console.log(user)
     const {toAdd} = req.body
-    console.log(toAdd)
+   
     try {
         const exists = await User.findOne({name:toAdd})
         if (exists) {
+            const old = await User.findOne({"name.Contacts.name": toAdd})
+            if (old) {throw(Error("Contacts already added")) }
             const id = exists._id
             await User.updateOne(
                 {_id: user},
                 {
-                    $set: {
+                    $push: {
                         Contacts: id
                     }
                 })
