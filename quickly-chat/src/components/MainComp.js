@@ -1,7 +1,12 @@
+import { useState } from "react";
+import AddUsrMnu from "./AddUsrMnu";
+
 const MainComp = ({ selected, setUi, children, user }) => {
+
+  const [searchMen, setSMen] = useState()
   if (user) {
     return (
-      <div className="h-screen flex flex-col bg-black-2">
+      <div onClick={(e) => {if (e.target.name != "menu") console.log("")}} className="h-screen flex flex-col bg-black-2">
         <div className="absolute bg-orange-500 h-16 w-60 border-orange-500 border-b rounded-b-full right-32 z-1"></div>
         <div className="bg-black"></div>
         <div id="upper" className=" flex-initial h-24 flex justify-center">
@@ -54,12 +59,24 @@ const MainComp = ({ selected, setUi, children, user }) => {
           </button>
         </div>
 
-        <div id="main" className="bg-white flex flex-col flex-1">
+        <div id="main" className="bg-black-3  flex flex-col flex-1">
           {children}
+          {selected == "contacts" ? <AddCntBtn setSMen={() => setSMen}></AddCntBtn> : <></>}
+          {searchMen && <AddUsrMnu name="menu" user={user}></AddUsrMnu>}
         </div>
       </div>
     );
   } else return <p>Loading...</p>;
 };
+
+const AddCntBtn = ({setSMen}) => {
+
+  return (
+    <div onClick={setSMen(1)} className='w-14 h-14 clickable absolute bottom-4 right-4 rounded-full bg-orange-500 p-2'>
+      <img src='/images/addU.svg'></img>
+    </div>
+  )
+}
+
 
 export default MainComp;
