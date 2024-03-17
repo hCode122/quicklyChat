@@ -75,8 +75,8 @@ export default function MainUi() {
         chats.length > 0 ? chats.map((el, index) => {
           return(<ChatCard key={el._id} name={el.name}/>)
         }) : contacts.length > 0 ? contacts.map((el, index) => {
-          return(<ContactCard key={el._id} name={el.name}/>)
-        }):(<p>Loading...</p>)
+          return(<ContactCard key={el._id} user={user} name={el.name}/>)
+        }):(<img src="/images/loader.svg" className="w-16 h-16 m-auto"></img>)
       }
     </MainComp>
   )
