@@ -14,4 +14,8 @@ router.post("/search", mainController.search)
 router.get("/chats", mainController.getChats)
 router.post("/chats", mainController.createChat)
 
+router.post("/message", mainController.createMessage)
+
+router.post("/check", mainController.chatCheck)
+
 module.exports = router;
