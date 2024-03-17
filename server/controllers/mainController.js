@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const User = require("../models/User")
 const Chat = require("../models/Chat")
+const Message = require("../models/Message")
 
 exports.getContacts = async (req, res) => {
     const _id = req.user;
@@ -87,12 +88,71 @@ exports.createChat = async (req, res) => {
     }
 
     try {
-        await Chat.create(newChat).then(
-            () => {res.status(200)});
+        const reslt = await Chat.create(newChat).then(result => {return result});
+        await User.updateOne(
+            {name:sendName},
+            {
+                $push: {
+                    Chats: reslt._id
+                }
+            }
+        );
+        await User.updateOne(
+            {name:recName},
+            {
+                $push: {
+                    Chats: reslt._id
+                }
+            }
+        );
+            
+        return res.status(200).json("Chat Created");
     } catch (e) {
         return console.log(e)
     }
 
 
 
+}
+
+exports.createMessage = async (req, res) => {
+    const {chatId, sender, text} = req.body;
+    const user = req.user;
+    const date = newDate().toLocaleString("en")
+    const newMessage = {
+        text : text,
+        senderName: sender,
+        chatId:chatId,
+        data: date
+    }
+
+    try {
+        await Message.create(newMessage).then(
+            result => {return result})
+    } catch (e) {
+        console.log(e)
+    }
+}
+    
+exports.chatCheck = async (req, res) => {
+    const {sender, receiver} = req.body;
+    try {
+        await Chat.find({
+            $or:[
+                { $and: [
+                        {sendName:sender},
+                        {recName:receiver}
+                    ]
+                },
+                {
+                    $and: [
+                        {sendName:receiver},
+                        {recName:sender}
+                    ]
+                }
+            ]
+        }).then(result => {return res.json(result)})
+    } catch (e) {
+        console.log(e)
+    }
 }
