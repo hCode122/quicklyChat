@@ -66,7 +66,11 @@ const MainComp = ({ selected, setUi, children, user }) => {
         </div>
       </div>
     );
-  } else return <img className="bg-black-2 w-12 h-12"  src="/images/loader.svg"></img>;
+  } else return (<div className="bg-black-2 w-full h-full">
+     <img className="bg-black-2 w-18 h-18 m-auto"  src="/images/loader.svg">
+     </img>
+     </div>
+     );
 };
 
 const AddCntBtn = ({setSMen}) => {
