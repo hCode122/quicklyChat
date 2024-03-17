@@ -66,7 +66,7 @@ const MainComp = ({ selected, setUi, children, user }) => {
         </div>
       </div>
     );
-  } else return <p>Loading...</p>;
+  } else return <img className="bg-black-2 w-12 h-12"  src="/images/loader.svg"></img>;
 };
 
 const AddCntBtn = ({setSMen}) => {
