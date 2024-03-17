@@ -4,14 +4,36 @@ import { useContext, useEffect, useState } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import connectSocket from "../../../hooks/useSocket";
 import { useTargetContext } from '../../../hooks/useTargetContext';
+import useCheck from '../../../hooks/useCheck';
+import useCreateChat from '../../../hooks/useCreateChat';
 
 
 const ChatWindow = () => {
     const {target, socket} = useTargetContext()
     const [msgs, setMsg] = useState([])
     const {user} = useAuthContext()
-    
-    
+    const [currentCh, setChat] = useState()
+    const check = useCheck(user, target);
+    const createCh = useCreateChat()
+    useEffect(() => {
+        (async () => {
+             const res = await check()
+             
+             if (!res) {
+                (async () => {
+                    const data = await createCh()
+                    setChat(data)
+                })()
+             } else {
+                setChat(res)
+             }
+        })()
+    }, [])
+
+    useEffect(() => {
+        console.log(currentCh)
+    },[currentCh])
+
     useEffect(() => {
         const receive = message => {
             setMsg((msgs) => [...msgs, message]);
@@ -20,6 +42,7 @@ const ChatWindow = () => {
         return () => socket.off("receive-message",receive);
     }, [])
 
+    
     
 
     if (user) {
