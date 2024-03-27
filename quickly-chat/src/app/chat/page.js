@@ -6,7 +6,7 @@ import connectSocket from "../../../hooks/useSocket";
 import { useTargetContext } from '../../../hooks/useTargetContext';
 import useCheck from '../../../hooks/useCheck';
 import useCreateChat from '../../../hooks/useCreateChat';
-
+import sendMessage from '../../../hooks/sendMessage';
 
 const ChatWindow = () => {
     const {target, socket} = useTargetContext()
@@ -14,12 +14,12 @@ const ChatWindow = () => {
     const {user} = useAuthContext()
     const [currentCh, setChat] = useState()
     const check = useCheck(user, target);
-    const createCh = useCreateChat()
+    const createCh = useCreateChat(user, target)
     useEffect(() => {
         (async () => {
              const res = await check()
-             
-             if (!res) {
+             console.log(res)
+             if (res.length == 0) {
                 (async () => {
                     const data = await createCh()
                     setChat(data)
@@ -45,7 +45,7 @@ const ChatWindow = () => {
     
     
 
-    if (user) {
+    if (user && currentCh) {
         return(
             <div className="flex bg-black-2 flex-col h-screen">
                 <div className="border-black border-2 flex flex-initial items-center h-24">
@@ -57,7 +57,7 @@ const ChatWindow = () => {
                 
                 <TextArea user={user} msgs={msgs} setMsg={setMsg} socket={socket}></TextArea>
                 
-                <WriteArea user={user} msgs={msgs} setMsg={setMsg} socket={socket} target={target}></WriteArea>
+                <WriteArea chatId={currentCh._id} user={user} msgs={msgs} setMsg={setMsg} socket={socket} target={target}></WriteArea>
             </div>
         )
     }
@@ -80,14 +80,16 @@ const Message = ({msg, username}) => {
     )
 }
 
-const WriteArea = ({socket, target, msgs, setMsg, user}) => {
+const WriteArea = ({chatId, socket, target, msgs, setMsg, user}) => {
     const [text, setTxt] = useState("")
     const submit = (event) => {
         event.preventDefault()
-        const newMsg = {text:text, sender:user.username}
+        const date = new Date()
+        const newMsg = {text:text, senderName:user.username, rec:target,
+        chatId:chatId, date:date}
         setMsg((msgs) => [...msgs, newMsg])
         socket.emit("send-message", newMsg, target)
-        
+        sendMessage(newMsg, user);
         setTxt("")
     }
 
