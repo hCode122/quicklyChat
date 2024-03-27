@@ -69,8 +69,8 @@ exports.getChats = async (req, res) => {
         const chatData = []
         for (let i = 0; i < chats["Chats"].length; i+=1) {
             const _id =  chats["Chats"][i]
-            const user = await User.findOne({_id})
-            chatData.push(user)
+            const chat = await Chat.findOne({_id})
+            chatData.push(chat)
         }
         return res.status(200).json(chatData);
     } catch (error) {
@@ -116,19 +116,27 @@ exports.createChat = async (req, res) => {
 }
 
 exports.createMessage = async (req, res) => {
-    const {chatId, sender, text} = req.body;
+    const newMsg = req.body;
     const user = req.user;
-    const date = newDate().toLocaleString("en")
-    const newMessage = {
-        text : text,
-        senderName: sender,
-        chatId:chatId,
-        data: date
+    const dbMsg = {
+        text : newMsg.text,
+        senderName: newMsg.senderName,
+        chatId:newMsg.chatId,
+        date: newMsg.date
     }
 
     try {
-        await Message.create(newMessage).then(
+        const createdMsg = await Message.create(dbMsg).then(
             result => {return result})
+        await Chat.updateOne(
+            {_id:newMsg.chatId},
+            {
+                $push: {
+                    Messages:createdMsg._id
+                }
+            }  
+        )
+        
     } catch (e) {
         console.log(e)
     }
@@ -137,7 +145,7 @@ exports.createMessage = async (req, res) => {
 exports.chatCheck = async (req, res) => {
     const {sender, receiver} = req.body;
     try {
-        await Chat.find({
+        await Chat.findOne({
             $or:[
                 { $and: [
                         {sendName:sender},
