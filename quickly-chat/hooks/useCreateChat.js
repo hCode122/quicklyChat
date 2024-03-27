@@ -1,7 +1,7 @@
 const useCreateChat = (user, target) => {
     const createCh = async () => {
        try {
-           const data = await fetch("http://localhost:3001/api/data/chat", {
+           const data = await fetch("http://localhost:3001/api/data/chats", {
                method: "POST",
                headers: {
                    'Accept': 'application/json',
