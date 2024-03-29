@@ -164,3 +164,16 @@ exports.chatCheck = async (req, res) => {
         console.log(e)
     }
 }
+
+exports.loadMessages = async (req, res) => {
+    const {depth, chat} = req.body;
+    const user = req.user;
+
+    try {
+        const msgIds = await Chat.findOne({_id:chat}).select("Messages").limit("20")
+        const messages = await Message.find({_id: {$in: msgIds['Messages']}})
+        return res.status(200).json(messages);
+    } catch (error) {
+        console.log(error)
+    }
+}
