@@ -1,31 +1,38 @@
 'use client'
 import { useSearchParams } from 'next/navigation';
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import connectSocket from "../../../hooks/useSocket";
 import { useTargetContext } from '../../../hooks/useTargetContext';
 import useCheck from '../../../hooks/useCheck';
 import useCreateChat from '../../../hooks/useCreateChat';
 import sendMessage from '../../../hooks/sendMessage';
+import useLoadMessages from '../../../hooks/useLoadMessages';
 
 const ChatWindow = () => {
     const {target, socket} = useTargetContext()
     const [msgs, setMsg] = useState([])
+    const [depth, setDep] = useState(0)
     const {user} = useAuthContext()
     const [currentCh, setChat] = useState()
     const check = useCheck(user, target);
     const createCh = useCreateChat(user, target)
+    const loadMessages = useLoadMessages(user.token)
     useEffect(() => {
         (async () => {
              const res = await check()
              console.log(res)
-             if (res.length == 0) {
-                (async () => {
-                    const data = await createCh()
-                    setChat(data)
-                })()
+             if (!res) {
+              
+                const data = await createCh()
+                setChat(data)
+                console.log(data)
              } else {
-                setChat(res)
+                setChat(res)   
+                const messages = await loadMessages(depth, res._id)
+                
+                setMsg(messages)
+                
              }
         })()
     }, [])
@@ -64,6 +71,8 @@ const ChatWindow = () => {
 }
 
 const TextArea = ({socket, msgs, setMsg, user}) => {
+    
+    
     return (
         <div className="bg-black flex-1 text-white flex flex-col gap-2 overflow-scroll">
            {msgs.map((msg, index) => {
@@ -74,22 +83,35 @@ const TextArea = ({socket, msgs, setMsg, user}) => {
 }
 
 const Message = ({msg, username}) => {
+    const msgRef = useRef(null)
 
+    const scrollToBottom = () => {
+        setTimeout(() => {
+            msgRef.current?.scrollIntoView({ behavior: "auto" })
+        , 500})
+    }
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [msg])
     return (
-        <div className={(msg.sender == username) ? 'sent' : "received"} >{msg.text}</div>
+        <div ref={msgRef} className={(msg.
+            senderName == username) ? 'sent' : "received"} >{msg.text}</div>
     )
 }
 
 const WriteArea = ({chatId, socket, target, msgs, setMsg, user}) => {
     const [text, setTxt] = useState("")
-    const submit = (event) => {
+    const submit = async (event) => {
         event.preventDefault()
         const date = new Date()
         const newMsg = {text:text, senderName:user.username, rec:target,
         chatId:chatId, date:date}
-        setMsg((msgs) => [...msgs, newMsg])
-        socket.emit("send-message", newMsg, target)
-        sendMessage(newMsg, user);
+        
+        const createdM = await sendMessage(newMsg, user);
+        console.log(createdM)
+        setMsg((msgs) => [...msgs, createdM])
+        socket.emit("send-message", createdM, target)
         setTxt("")
     }
 
