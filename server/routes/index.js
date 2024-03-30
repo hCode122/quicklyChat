@@ -15,6 +15,7 @@ router.get("/chats", mainController.getChats)
 router.post("/chats", mainController.createChat)
 
 router.post("/message", mainController.createMessage)
+router.post("/loadMessages", mainController.loadMessages)
 
 router.post("/check", mainController.chatCheck)
 
