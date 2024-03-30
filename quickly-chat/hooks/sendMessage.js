@@ -1,6 +1,6 @@
 const sendMessage = async (newMsg, user) => {
  
-    await fetch("http://localhost:3001/api/data/message",{
+    const message = await fetch("http://localhost:3001/api/data/message",{
         method: "POST",
         headers: {
             "accept": "Application/json",
@@ -9,6 +9,7 @@ const sendMessage = async (newMsg, user) => {
         },
         body: JSON.stringify(newMsg)
     }).then(response => response.json()).then(data => {return data})
+    return message
 }
 
 export default sendMessage;
