@@ -106,7 +106,7 @@ exports.createChat = async (req, res) => {
             }
         );
             
-        return res.status(200).json("Chat Created");
+        return res.status(200).json(reslt);
     } catch (e) {
         return console.log(e)
     }
@@ -136,6 +136,8 @@ exports.createMessage = async (req, res) => {
                 }
             }  
         )
+
+        return res.status(200).json(createdMsg)
         
     } catch (e) {
         console.log(e)
@@ -167,10 +169,9 @@ exports.chatCheck = async (req, res) => {
 
 exports.loadMessages = async (req, res) => {
     const {depth, chat} = req.body;
-    const user = req.user;
 
     try {
-        const msgIds = await Chat.findOne({_id:chat}).select("Messages").limit("20")
+        const msgIds = await Chat.findOne({_id:chat}).select("Messages").skip(depth*20).limit("20")
         const messages = await Message.find({_id: {$in: msgIds['Messages']}})
         return res.status(200).json(messages);
     } catch (error) {
