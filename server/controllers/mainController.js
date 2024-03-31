@@ -171,7 +171,8 @@ exports.loadMessages = async (req, res) => {
     const {depth, chat} = req.body;
 
     try {
-        const msgIds = await Chat.findOne({_id:chat}).select("Messages").skip(depth*20).limit("20")
+        const msgIds = await Chat.findOne({_id:chat},{"Messages": {$slice : 20}})
+        console.log(msgIds)
         const messages = await Message.find({_id: {$in: msgIds['Messages']}})
         return res.status(200).json(messages);
     } catch (error) {
