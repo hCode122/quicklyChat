@@ -17,7 +17,7 @@ const ChatWindow = () => {
     const [currentCh, setChat] = useState()
     const check = useCheck(user, target);
     const createCh = useCreateChat(user, target)
-    const loadMessages = useLoadMessages(user.token)
+    const loadMessages = useLoadMessages(user)
     useEffect(() => {
         (async () => {
              const res = await check()
@@ -71,15 +71,49 @@ const ChatWindow = () => {
 }
 
 const TextArea = ({socket, msgs, setMsg, user}) => {
-    
-    
     return (
         <div className="bg-black flex-1 text-white flex flex-col gap-2 overflow-scroll">
            {msgs.map((msg, index) => {
-            return <Message key={index} username={user.username} msg={msg}></Message>
+            let day = ""
+            let yesterday = ""
+            let banner = "";
+            
+            if (msg && index == 0) {
+                const firstDayV = new Date(msgs[0].date);
+                const firstDay = firstDayV.toLocaleDateString("en", { weekday: 'long' });
+                banner = firstDay;
+            }
+
+            if (msg && index != 0) {
+                const dateVar = new Date(msg.date);
+                day = dateVar.toLocaleDateString("en", { weekday: 'long' }); 
+                const preDateVar = new Date(msgs[index-1].date);
+                yesterday = preDateVar.toLocaleDateString("en", { weekday: 'long' });
+                if (day == yesterday) 
+                    {
+                        // no need to re display a day banner if we are still
+                        // in the same day       
+                        banner = null
+                    } else {
+                        banner = day;
+                    }
+            }
+            return (
+                <>
+                {banner != null ? <DayBanner day={banner}></DayBanner> : <></>}
+                <Message key={index} username={user.username} msg={msg}></Message>
+                </>
+            )
            })}
         </div>
     )
+}
+
+// Used to display the name of the day the following messages where sent at
+const DayBanner = ({day}) => {
+    return(<div className="flex-1 text-center mt-2 mb-4
+     text-orange-600 font-bold border-b-2 border-t-2 pb-2 border-orange-700"
+     >{day}</div>)
 }
 
 const Message = ({msg, username}) => {
@@ -96,7 +130,10 @@ const Message = ({msg, username}) => {
     }, [msg])
     return (
         <div ref={msgRef} className={(msg.
-            senderName == username) ? 'sent' : "received"} >{msg.text}</div>
+            senderName == username) ? 'sent' : "received"} >
+                <p>{msg.text}</p>
+                <p className='text-sm text-black-2'>{msg.date}</p>
+        </div>
     )
 }
 
