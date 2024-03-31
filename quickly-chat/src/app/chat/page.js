@@ -113,12 +113,13 @@ const TextArea = ({socket, msgs, setMsg, user}) => {
 const DayBanner = ({day}) => {
     return(<div className="flex-1 text-center mt-2 mb-4
      text-orange-600 font-bold border-b-2 border-t-2 pb-2 border-orange-700"
-     >{day}</div>)
+    >{day}</div>)
 }
 
 const Message = ({msg, username}) => {
     const msgRef = useRef(null)
-
+    const dateVar = new Date(msg.date)
+    const timeSent = dateVar.getHours() + ":" + dateVar.getMinutes();
     const scrollToBottom = () => {
         setTimeout(() => {
             msgRef.current?.scrollIntoView({ behavior: "auto" })
@@ -131,8 +132,9 @@ const Message = ({msg, username}) => {
     return (
         <div ref={msgRef} className={(msg.
             senderName == username) ? 'sent' : "received"} >
-                <p>{msg.text}</p>
-                <p className='text-sm text-black-2'>{msg.date}</p>
+                <p className={(msg.
+            senderName == username) ? 'bg-orange-600' : "bg-black-3"}>{msg.text}</p>
+                <p className='text-sm time'>{timeSent}</p>
         </div>
     )
 }
