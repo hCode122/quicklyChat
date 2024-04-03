@@ -1,14 +1,14 @@
-const useLoadMessages = (token) => {
+const useLoadMessages = (user) => {
   const loadMessages = async (depth, chatId) => {
     try {
-      const messages = await fetch(
+      const data = await fetch(
         "http://localhost:3001/api/data/loadMessages",
         {
           method: "POST",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: "bearer " + token,
+            Authorization: "bearer " + user.token,
           },
           body: JSON.stringify({
             depth: depth,
@@ -17,11 +17,10 @@ const useLoadMessages = (token) => {
         }
       )
         .then((result) => result.json())
-        .then((messages) => {
-          return messages;
+        .then((data) => {
+          return data;
         });
-
-      return messages;
+      return data;
     } catch (e) {
       console.log(e);
     }
