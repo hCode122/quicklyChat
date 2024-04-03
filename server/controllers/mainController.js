@@ -171,20 +171,15 @@ exports.loadMessages = async (req, res) => {
     const {depth,chat} = req.body;
 
     try {
-        const foundChat = await Chat.findOne({_id:chat}, 'Messages -_id')
-        const msgsLen = foundChat.Messages.length;
-        const minimum = msgsLen-(depth*20)-22;
-        let msgIds = []
-        if (minimum < 0) {
-            msgIds = foundChat.Messages.slice(0, msgsLen-(depth*20));
-            moreExists = 0
-            const messages = await Message.find({_id: {$in: msgIds}})
-            return res.status(200).json({messages:messages.slice(0,22),moreExists});
+        const messages = (await Message.find({chatId:chat}).skip(depth*20).limit(21).sort("-date")).reverse();
+        const msgsLen = messages.length;
+
+        if (msgsLen == 21) {
+            moreExists = 1
+            return res.status(200).json({messages:messages.slice(1,21),moreExists});
         } else {
-            msgIds = foundChat.Messages.slice(msgsLen-(depth*20)-21, msgsLen-(depth*20));
-            const messages = await Message.find({_id: {$in: msgIds}})
-            if (messages.length > 20) {moreExists = 1}
-            return res.status(200).json({messages:messages.slice(1,22),moreExists});
+            moreExists = 0
+            return res.status(200).json({messages:messages.slice(0,21),moreExists});
         }
         
          
