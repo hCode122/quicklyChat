@@ -44,14 +44,32 @@ transition: background-color 200ms linear;
 .sent {
     max-width: 16rem;
     word-wrap: break-word;
-    @apply m-1 flex-initial self-start bg-orange-500 p-1 rounded-r-md
+    @apply m-1 flex-initial self-start p-1 
+}
+
+.sent p {
+    @apply p-1 rounded-lg
+}
+
+.sent .time {
+    @apply  text-left
 }
 
 .received {
     max-width: 16rem;
     word-wrap: break-word;
-    @apply m-1 self-end flex-initial bg-black-3 p-1 rounded-l-md
+    @apply m-1 self-end flex-initial  p-1
 }
+
+.received .time {
+    @apply text-right
+}
+
+.received  p {
+    @apply rounded-lg p-1
+}
+
+
 
 
 
