@@ -12,26 +12,23 @@ import useLoadMessages from '../../../hooks/useLoadMessages';
 const ChatWindow = () => {
     const {target, socket} = useTargetContext()
     const [msgs, setMsg] = useState([])
-    const [depth, setDep] = useState(0)
     const {user} = useAuthContext()
     const [currentCh, setChat] = useState()
     const check = useCheck(user, target);
     const createCh = useCreateChat(user, target)
     const loadMessages = useLoadMessages(user)
+    const [allowLoadMore, setLoadMore] = useState(0)
     useEffect(() => {
         (async () => {
              const res = await check()
-             console.log(res)
-             if (!res) {
-              
+             if (!res & !currentCh) {
                 const data = await createCh()
                 setChat(data)
-                console.log(data)
              } else {
                 setChat(res)   
-                const messages = await loadMessages(depth, res._id)
-                
+                const {messages, moreExists} = await loadMessages(0,res._id)
                 setMsg(messages)
+                setLoadMore(moreExists)
                 
              }
         })()
@@ -62,17 +59,22 @@ const ChatWindow = () => {
                 </div>
                 
                 
-                <TextArea user={user} msgs={msgs} setMsg={setMsg} socket={socket}></TextArea>
+                <TextArea user={user} msgs={msgs} setMsg={setMsg} loadMessages={loadMessages}
+                chatID={currentCh._id} allowLoadMore={allowLoadMore} setLoadMore={setLoadMore}></TextArea>
                 
-                <WriteArea chatId={currentCh._id} user={user} msgs={msgs} setMsg={setMsg} socket={socket} target={target}></WriteArea>
+                <WriteArea chatId={currentCh._id} user={user} msgs={msgs} setMsg={setMsg} socket={socket}
+                target={target}></WriteArea>
             </div>
         )
     }
 }
 
-const TextArea = ({socket, msgs, setMsg, user}) => {
+const TextArea = ({msgs, setMsg, loadMessages, user, chatID, allowLoadMore, setLoadMore}) => {
+    const [depth, setDepth] = useState(1)
     return (
         <div className="bg-black flex-1 text-white flex flex-col gap-2 overflow-scroll">
+            {allowLoadMore? <LoadMore depth={depth} setDepth={setDepth} loadMessages={loadMessages} 
+            setMsg={setMsg} chatID={chatID} setLoadMore={setLoadMore} msgs={msgs}></LoadMore> : <></>}
            {msgs.map((msg, index) => {
             let day = ""
             let yesterday = ""
@@ -134,7 +136,7 @@ const Message = ({msg, username}) => {
             senderName == username) ? 'sent' : "received"} >
                 <p className={(msg.
             senderName == username) ? 'bg-orange-600' : "bg-black-3"}>{msg.text}</p>
-                <p className='text-sm time'>{timeSent}</p>
+                <p className='text-sm font-light time'>{timeSent}</p>
         </div>
     )
 }
@@ -163,6 +165,25 @@ const WriteArea = ({chatId, socket, target, msgs, setMsg, user}) => {
             flex-1 max-w-sm overflow-auto ml-4 text-sm input"></textarea>
             <button type="submit"><img className="h-8 w-8 mr-2" src="/images/send.svg"></img></button>
         </form>
+    )
+}
+
+const LoadMore = ({loadMessages,msgs, depth, setDepth, chatID, setMsg, setLoadMore}) => {
+    const loadM = async () => {
+        const {messages, moreExists} = await loadMessages(depth, chatID)
+        setLoadMore(moreExists)
+        const updatedArr = messages.concat(msgs)
+        console.log(updatedArr)
+        console.log(messages)
+        setMsg(updatedArr)
+        setDepth(() => {depth+1})
+    }
+
+    return (
+        <div onClick={() => loadM()} className='flex-initial clickable text-center mt-2 rounded-lg
+        w-24 bg-orange-500 text-black self-center'>
+            <p>Load more</p>
+        </div>
     )
 }
 
