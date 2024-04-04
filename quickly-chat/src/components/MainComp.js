@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AddUsrMnu from "./AddUsrMnu";
 
 const MainComp = ({ selected, setUi, children, user }) => {
+  // handle outside click
+  useEffect(() => {
+    document.addEventListener('click', handleOutsideClick, true);
+  }, [])
 
+  const searchMenRef= useRef(null)
   const [searchMen, setSMen] = useState()
+
+  const handleOutsideClick = (e) => {
+    if (searchMenRef.current && !searchMenRef.current.contains(e.target)) {
+      setSMen(null)
+    }
+  }
+
+  
   if (user) {
     return (
-      <div onClick={(e) => {if (e.target.name != "menu") console.log("")}} className="h-screen flex flex-col bg-black-2">
+      <div  className="h-screen flex flex-col bg-black-2">
         <div className="absolute bg-orange-500 h-16 w-60 border-orange-500 border-b rounded-b-full right-32 z-1"></div>
         <div className="bg-black"></div>
         <div id="upper" className=" flex-initial h-24 flex justify-center">
@@ -62,7 +75,7 @@ const MainComp = ({ selected, setUi, children, user }) => {
         <div id="main" className="bg-black-3  flex flex-col flex-1">
           {children}
           {selected == "contacts" ? <AddCntBtn setSMen={() => setSMen}></AddCntBtn> : <></>}
-          {searchMen && <AddUsrMnu name="menu" user={user}></AddUsrMnu>}
+          {searchMen && <AddUsrMnu setSMen={setSMen} ref={searchMenRef} name="menu" user={user}></AddUsrMnu>}
         </div>
       </div>
     );
