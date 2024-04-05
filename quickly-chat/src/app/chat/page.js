@@ -1,13 +1,12 @@
 'use client'
-import { useSearchParams } from 'next/navigation';
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
-import connectSocket from "../../../hooks/useSocket";
 import { useTargetContext } from '../../../hooks/useTargetContext';
 import useCheck from '../../../hooks/useCheck';
 import useCreateChat from '../../../hooks/useCreateChat';
 import sendMessage from '../../../hooks/sendMessage';
 import useLoadMessages from '../../../hooks/useLoadMessages';
+import { useRouter } from "next/navigation";
 
 const ChatWindow = () => {
     const {target, socket} = useTargetContext()
@@ -18,6 +17,8 @@ const ChatWindow = () => {
     const createCh = useCreateChat(user, target)
     const loadMessages = useLoadMessages(user)
     const [allowLoadMore, setLoadMore] = useState(0)
+
+    const router = useRouter()
     useEffect(() => {
         (async () => {
              const res = await check()
@@ -46,16 +47,18 @@ const ChatWindow = () => {
         return () => socket.off("receive-message",receive);
     }, [])
 
+ 
     
     
 
     if (user && currentCh) {
         return(
             <div className="flex bg-black-2 flex-col h-screen">
-                <div className="border-black border-2 flex flex-initial items-center h-24">
-                    <img src="/images/user2.svg" className="ml-4 rounded-full border-orange-500 border-2 
+                <div className="border-black border-2 flex justify-between flex-initial items-center h-24">
+                    <img onClick={() => router.back()} src="Images/arrow-left.svg" className='h-6 clickable3 flex-initial ml-2 mb-10'></img>
+                    <p className="h-12 text-lg overflow-hidden  font-bold text-orange-500 ">{target}</p>
+                    <img src="/images/user2.svg" className=" mr-4 rounded-full border-orange-500 border-2 
                     flex-initial w-20 h-20"></img>
-                    <p className="h-12 text-lg font-bold text-orange-500 ml-8">{target}</p>
                 </div>
                 
                 
