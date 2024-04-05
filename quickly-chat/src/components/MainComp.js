@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AddUsrMnu from "./AddUsrMnu";
+import DownMenu from "./DownMenu";
 
 const MainComp = ({ selected, setUi, children, user }) => {
   // handle outside click
@@ -9,10 +10,14 @@ const MainComp = ({ selected, setUi, children, user }) => {
 
   const searchMenRef= useRef(null)
   const [searchMen, setSMen] = useState()
-
+  const [settingsMenu, showSettingsMenu] = useState(0)
+  const settingsMenuRef = useRef(null)
   const handleOutsideClick = (e) => {
     if (searchMenRef.current && !searchMenRef.current.contains(e.target)) {
       setSMen(null)
+    }
+    if (settingsMenuRef.current && !settingsMenuRef.current.contains(e.target)) {
+      showSettingsMenu(null)
     }
   }
 
@@ -24,12 +29,13 @@ const MainComp = ({ selected, setUi, children, user }) => {
         <div className="bg-black"></div>
         <div id="upper" className=" flex-initial h-24 flex justify-center">
           <p className="w-40 text-black absolute h-10 text-2xl font-bold right-32 top-4 z-2">
-            QuicklyChat
+            Quickly <p className="text-white absolute left-20 bottom-2 ">Chat</p>
           </p>
         </div>
-        <div className="absolute top-8 clickable2  left-64">
-          <img className="w-8 h-10 m-auto" src="/images/menu.svg"></img>
+        <div onClick={() => showSettingsMenu(1)} className="absolute top-2 clickable2  left-64">
+          <img className="w-8 h-10  m-auto" src="/images/menu.svg"></img>
         </div>
+        {settingsMenu && <DownMenu ref={settingsMenuRef}></DownMenu>}
         <div></div>
         <div
           className="grid grid-cols-3 grid-rows-1 text-orange-300 text-center text-lg font-semibold
