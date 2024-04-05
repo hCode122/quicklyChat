@@ -15,6 +15,7 @@ import { useTargetContext } from "../../hooks/useTargetContext";
 export default function MainUi() {
   const [selected, setUi] = useState("chats")
   const [loggedUsr, setUsr] = useState("null")
+  const [loading, setLoading] = useState(false)
   const router = useRouter();
   
   const [contacts, setContacts] = useState([])  
@@ -58,13 +59,15 @@ export default function MainUi() {
   useEffect(() => {
     const callFetch = async() => {
       if (loggedUsr.token != null) {
+        setLoading(true)
         const fetchedContacts = await fetchContacts(loggedUsr.token);
         const fetchedChats = await fetchChats(loggedUsr.token);
-        setContacts(fetchedContacts)
-        setChats(fetchedChats)
+        fetchedContacts && setContacts(fetchedContacts);
+        fetchedChats && setChats(fetchedChats);
+        setLoading(false)
       }
 
-    }
+    } 
     callFetch()
   },[loggedUsr])
   
@@ -72,11 +75,21 @@ export default function MainUi() {
   return (    
     <MainComp selected={selected} setUi={setUi} user={loggedUsr.token}>
       {
-        chats.length > 0 ? chats.map((el, index) => {
-          return(<ChatCard key={el._id} name={el.name}/>)
-        }) : contacts.length > 0 ? contacts.map((el, index) => {
-          return(<ContactCard key={el._id} user={user} name={el.name}/>)
-        }):(<img src="/images/loader.svg" className="w-16 h-16 m-auto"></img>)
+        contacts[0] != null && selected=="contacts" ? contacts.map((el, index) => {
+          return(
+            <ContactCard user={user} name={el.name}/>
+          )
+        }) : chats[0] != null && selected=="chats" ? chats.map((el, index) => {
+          return(
+            <ChatCard key={el._id} name={el.recName}/>
+          )
+        }) : selected=="groubs" ?  
+          (
+            <p>Coming Soon...</p>
+          )
+        : loading ? (<img src="/images/loader.svg" className="w-16 h-16 m-auto"></img>) : (
+          <p>No data</p>
+        )
       }
     </MainComp>
   )
