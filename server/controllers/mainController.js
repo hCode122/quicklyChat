@@ -83,10 +83,11 @@ exports.getChats = async (req, res) => {
 
         const chatData = []
         for (let i = 0; i < chats["Chats"].length; i+=1) {
-            const _id =  chats["Chats"][i]
+            const _id =  chats["Chats"][i]["_id"]
             const chat = await Chat.findOne({_id})
             chatData.push(chat)
         }
+        
         return res.status(200).json(chatData);
     } catch (error) {
         console.log(error)
