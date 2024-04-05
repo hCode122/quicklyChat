@@ -32,10 +32,9 @@ transition: background-color 200ms linear;
 .clickable3 {
     cursor: pointer;
     transition: background-color 200ms linear;
-    transition: border 200ms linear;
     }
     .clickable3:hover {
-        @apply bg-gray-400 rounded-lg;
+        @apply bg-gray-400 ;
 
     }
     .clickable3:active {
