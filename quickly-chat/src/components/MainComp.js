@@ -10,7 +10,7 @@ const MainComp = ({ selected, setUi, children, user }) => {
 
   const searchMenRef= useRef(null)
   const [searchMen, setSMen] = useState()
-  const [settingsMenu, showSettingsMenu] = useState(0)
+  const [settingsMenu, showSettingsMenu] = useState(false)
   const settingsMenuRef = useRef(null)
   const handleOutsideClick = (e) => {
     if (searchMenRef.current && !searchMenRef.current.contains(e.target)) {
