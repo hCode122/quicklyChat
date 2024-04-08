@@ -19,7 +19,7 @@ export default function MainUi() {
   const router = useRouter();
   
   const [contacts, setContacts] = useState([])  
-  const [chats, setChats] = useState([])  
+  const [chats, setChats] = useState()  
 
   
   const {user} = useAuthContext();
@@ -64,6 +64,7 @@ export default function MainUi() {
         const fetchedChats = await fetchChats(loggedUsr.token);
         fetchedContacts && setContacts(fetchedContacts);
         fetchedChats && setChats(fetchedChats);
+        
         setLoading(false)
       }
 
@@ -71,7 +72,6 @@ export default function MainUi() {
     callFetch()
   },[loggedUsr])
   
-
   return (    
     <MainComp selected={selected} setUi={setUi} user={loggedUsr.token}>
       {
@@ -79,9 +79,9 @@ export default function MainUi() {
           return(
             <ContactCard user={user} name={el.name}/>
           )
-        }) : chats[0] != null && selected=="chats" ? chats.map((el, index) => {
+        }) : chats != undefined && selected=="chats" ? chats.chatData.map((el, index) => {
           return(
-            <ChatCard key={el._id} name={el.recName}/>
+            <ChatCard key={el._id} name={el.recName} lastM={chats.lastMs[index]}/>
           )
         }) : selected=="groubs" ?  
           (
