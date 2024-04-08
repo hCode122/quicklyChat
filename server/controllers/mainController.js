@@ -82,13 +82,17 @@ exports.getChats = async (req, res) => {
         const chats = await User.findOne({_id}).select("Chats");
 
         const chatData = []
+        let lastMs = []
         for (let i = 0; i < chats["Chats"].length; i+=1) {
             const _id =  chats["Chats"][i]["_id"]
             const chat = await Chat.findOne({_id})
+            lastM = await Message.find({chatId:chat._id}).sort({date: -1}).limit(1)
+
+            lastMs.push(lastM[0])
             chatData.push(chat)
         }
         
-        return res.status(200).json(chatData);
+        return res.status(200).json({chatData, lastMs});
     } catch (error) {
         console.log(error)
     }
