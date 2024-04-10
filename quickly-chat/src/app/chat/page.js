@@ -146,29 +146,45 @@ const Message = ({msg, username}) => {
 
 const WriteArea = ({chatId, socket, target, msgs, setMsg, user}) => {
     const [text, setTxt] = useState("")
+    const [sending, setSending] = useState(false)
+    const [sendError, setSError] = useState(false)
     const submit = async (event) => {
-        event.preventDefault()
-        const date = new Date()
-        const newMsg = {text:text, senderName:user.username, rec:target,
-        chatId:chatId, date:date}
+
+        try {
+            event.preventDefault()
+            const date = new Date()
+            const newMsg = {text:text, senderName:user.username, rec:target,
+            chatId:chatId, date:date}
+            
+            setSending(true);
+            const createdM = await sendMessage(newMsg, user);
+            setMsg((msgs) => [...msgs, createdM])
+            socket.emit("send-message", createdM, target)
+            setTxt("")
+            setSending(false);
+        } catch (e) {
+            setSending(false);
+            console.log("Network Error")
+        }
         
-        const createdM = await sendMessage(newMsg, user);
-        console.log(createdM)
-        setMsg((msgs) => [...msgs, createdM])
-        socket.emit("send-message", createdM, target)
-        setTxt("")
     }
 
     return (
-      
-        <form onSubmit={(e) => submit(e)} className="flex items-center gap-4  border-t border-orange-500
-         rounded-t-lg justify-evenly bg-red-2 min-h-16">
+        <form onSubmit={(e) => submit(e)} className="flex items-center gap-4  border-t 
+        border-orange-500rounded-t-lg justify-evenly bg-red-2 min-h-16">
             <textarea name="msg" value={text} onChange={(e) => setTxt(e.target.value)} 
             className="rounded-lg bg- border-orange-500 border-2 block min-h-8
             flex-1 max-w-sm overflow-auto ml-4 text-sm input"></textarea>
-            <button type="submit"><img className="h-8 w-8 mr-2" src="/images/send.svg"></img></button>
+            <button type="submit">
+                {
+                    sending ? <img className="h-8 w-8 mr-2" src="/images/loader2.svg"></img> 
+                    : <img className="h-8 w-8 mr-2" src="/images/send.svg"></img>
+                }
+                </button>
         </form>
+       
     )
+    
 }
 
 const LoadMore = ({loadMessages,msgs, depth, setDepth, chatID, setMsg, setLoadMore}) => {
