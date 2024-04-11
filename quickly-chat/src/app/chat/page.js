@@ -124,7 +124,8 @@ const DayBanner = ({day}) => {
 const Message = ({msg, username}) => {
     const msgRef = useRef(null)
     const dateVar = new Date(msg.date)
-    const timeSent = dateVar.getHours() + ":" + dateVar.getMinutes();
+    const timeSent = String(dateVar.getHours()).padStart(2, '0') + ":" 
+    + String( dateVar.getMinutes()).padStart(2, '0');
     const scrollToBottom = () => {
         setTimeout(() => {
             msgRef.current?.scrollIntoView({ behavior: "auto" })
