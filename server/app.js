@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var env = require('dotenv').config();
 var mongoose = require('mongoose')
-
+var User = require("./models/User") 
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 var cors = require("cors")
@@ -32,8 +32,10 @@ var io = require("socket.io")(3003,{
 })
 const globalUsers = new Map();
 // socket connection
-io.on("connection", socket => {
+io.on("connection", (socket) => {
+
     socket.on("register", (name, id) => {
+      socket.user = name
       if (globalUsers.has(id)) {
         console.log("User already exist")
       } else {
@@ -48,13 +50,27 @@ io.on("connection", socket => {
       socket.to(room).emit("receive-message", message)
     })
 
-    socket.on("leave",(name) => {
-      globalUsers.delete(name)
-      console.log("deleted")
+    socket.on("disconnect",() => {
+      console.log(socket.user)
+      globalUsers.delete(socket.user)
+      const date = new Date()
+      updateLastOnline(socket.user, date)
     })
   })
 
-
+const updateLastOnline = async (name,date) => {
+  try {
+    await User.updateOne({name:name}, {
+      lastOnline: 
+        date
+      
+    })
+    console.log(await User.findOne({name}))
+  } catch (e) {
+    console.log(e)
+  }
+  
+}
 
 app.use(logger('dev'));
 app.use(express.json());
