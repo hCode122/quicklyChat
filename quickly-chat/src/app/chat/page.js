@@ -155,7 +155,7 @@ const WriteArea = ({chatId, socket, target, msgs, setMsg, user}) => {
             event.preventDefault()
             const date = new Date()
             const newMsg = {text:text, senderName:user.username, rec:target,
-            chatId:chatId, date:date}
+            chatId:chatId, date:date, read:false}
             
             setSending(true);
             const createdM = await sendMessage(newMsg, user);
