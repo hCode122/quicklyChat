@@ -35,13 +35,9 @@ exports.search = async (req, res) => {
         
         const newDAr = Object.values(data)
         
-        
-        console.log("***********")
-        console.log(nameArr)
         for (let i = 0; i < newDAr.length; i+=1) {
-               
-                    if (!newCAr.includes(newDAr[i]))
-                    {returnedData.push(newDAr[i])}
+            if (!newCAr.includes(newDAr[i]))
+            {returnedData.push(newDAr[i])}
                 
         }
         if (returnedData) return res.status(200).json(data)
@@ -79,20 +75,23 @@ exports.getChats = async (req, res) => {
     const _id = req.user;
 
     try {
-        const chats = await User.findOne({_id}).select("Chats");
+        const chats = await User.findOne({_id}).select("Chats name");
 
         const chatData = []
-        let lastMs = []
+
         for (let i = 0; i < chats["Chats"].length; i+=1) {
             const _id =  chats["Chats"][i]["_id"]
             const chat = await Chat.findOne({_id})
-            lastM = await Message.find({chatId:chat._id}).sort({date: -1}).limit(1)
-
-            lastMs.push(lastM[0])
-            chatData.push(chat)
+            const lastM = await Message.findOne({chatId:chat._id}).sort({date: -1})
+            const count = (await Message.find({chatId:chat._id, senderName:{$ne: chats.name} ,
+                read:false})).length
+            console.log(count)
+            const recname = chats["name"] == chat.sendName ? chat.recName : chat.sendName;
+            var obj = {_id: {name: recname, lastM: lastM, unreadCount: count}}
+            chatData.push(obj)
         }
         
-        return res.status(200).json({chatData, lastMs});
+        return res.status(200).json(chatData);
     } catch (error) {
         console.log(error)
     }
@@ -142,7 +141,8 @@ exports.createMessage = async (req, res) => {
         text : newMsg.text,
         senderName: newMsg.senderName,
         chatId:newMsg.chatId,
-        date: newMsg.date
+        date: newMsg.date,
+        read: newMsg.read
     }
 
     try {
@@ -188,19 +188,37 @@ exports.chatCheck = async (req, res) => {
 }
 
 exports.loadMessages = async (req, res) => {
-    const {depth,chat} = req.body;
+    const {depth,chat, date} = req.body;
 
     try {
-        const messages = (await Message.find({chatId:chat}).skip(depth*20).limit(21).sort("-date")).reverse();
-        const msgsLen = messages.length;
-
-        if (msgsLen == 21) {
-            moreExists = 1
-            return res.status(200).json({messages:messages.slice(1,21),moreExists});
+        let unreadNum = 0;
+        let moreExists = 0
+        console.log(date)
+        console.log(new Date())
+        const unreadMessages = await Message.find({
+            date: {
+                $gte: date,
+                $lte: new Date()
+            }
+        })
+        console.log(unreadMessages)
+        if (unreadMessages.length < 2) {
+            const messages = (await Message.find({chatId:chat}).skip(depth*20).limit(21).sort("-date")).reverse();
+            const msgsLen = messages.length;
+            console.log('aaa')
+            if (msgsLen == 21) {
+                moreExists = 1
+                return res.status(200).json({messages:messages.slice(1,21),moreExists});
+            } else {
+                moreExists = 0
+                return res.status(200).json({messages:messages.slice(0,21),moreExists});
+            }
         } else {
-            moreExists = 0
-            return res.status(200).json({messages:messages.slice(0,21),moreExists});
+            unread = unreadMessages.length;
+            console.log(unreadMessages)
+
         }
+        
         
          
         
