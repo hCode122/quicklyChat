@@ -1,6 +1,13 @@
-const ChatCard = ({name, lastM}) => {
-    const date = new Date(lastM.date) 
-    const time = date.getHours() + ':' + date.getMinutes()
+const ChatCard = ({name, lastM, count}) => {
+    let date = ''
+    let time = ''
+    if (lastM) {
+         date = new Date(lastM.date) 
+         time = date.getHours() + ':' + date.getMinutes()
+    } else {
+
+    }
+    
     return(
     <div className="clickable flex-initial border-b-4 border-black bg-orange-500
     flex gap-2 flex-row h-16">
@@ -11,8 +18,10 @@ const ChatCard = ({name, lastM}) => {
                 <div className="font-bold text-xl flex-1">{name}</div>
                 <div className="pt-1 mr-3 text-sm w-8"> {time}</div>
             </div>
-            <div className="overflow-hidden text flex-1"> 
-                {lastM.text}
+            <div className="overflow-hidden flex gap-2 text flex-1"> 
+                <p className="flex-1 h-6">{lastM ? lastM.text : ""}</p> 
+                <p className="ml-auto mr-2 text-center rounded-full w-6 h-6 text-orange-500 bg-black-2
+                ">{count}</p>
             </div>
             
         </div>
