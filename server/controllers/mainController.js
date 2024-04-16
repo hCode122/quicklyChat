@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const User = require("../models/User")
 const Chat = require("../models/Chat")
 const Message = require("../models/Message")
+const v4 = require("uuid")
 
 exports.getContacts = async (req, res) => {
     const _id = req.user;
@@ -77,7 +78,7 @@ exports.getChats = async (req, res) => {
     try {
         const chats = await User.findOne({_id}).select("Chats name");
 
-        const chatData = []
+        const chatData = {}
 
         for (let i = 0; i < chats["Chats"].length; i+=1) {
             const _id =  chats["Chats"][i]["_id"]
@@ -85,12 +86,10 @@ exports.getChats = async (req, res) => {
             const lastM = await Message.findOne({chatId:chat._id}).sort({date: -1})
             const count = (await Message.find({chatId:chat._id, senderName:{$ne: chats.name} ,
                 read:false})).length
-            console.log(count)
+
             const recname = chats["name"] == chat.sendName ? chat.recName : chat.sendName;
-            var obj = {_id: {name: recname, lastM: lastM, unreadCount: count}}
-            chatData.push(obj)
+            chatData[recname] = {lastM: lastM, unreadCount: count, key: v4.v4()}
         }
-        
         return res.status(200).json(chatData);
     } catch (error) {
         console.log(error)
