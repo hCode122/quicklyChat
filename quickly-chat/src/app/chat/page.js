@@ -9,7 +9,7 @@ import useLoadMessages from '../../../hooks/useLoadMessages';
 import { useRouter } from "next/navigation";
 
 const ChatWindow = () => {
-    const {target, socket} = useTargetContext()
+    const {target, socketContext} = useTargetContext()
     const [msgs, setMsg] = useState([])
     const {user} = useAuthContext()
     const [currentCh, setChat] = useState()
@@ -43,8 +43,8 @@ const ChatWindow = () => {
         const receive = message => {
             setMsg((msgs) => [...msgs, message]);
         }
-        socket.on("receive-message", receive);
-        return () => socket.off("receive-message",receive);
+        socketContext.on("receive-message", receive);
+        return () => socketContext.off("receive-message",receive);
     }, [])
 
  
@@ -65,7 +65,7 @@ const ChatWindow = () => {
                 <TextArea user={user} msgs={msgs} setMsg={setMsg} loadMessages={loadMessages}
                 chatID={currentCh._id} allowLoadMore={allowLoadMore} setLoadMore={setLoadMore}></TextArea>
                 
-                <WriteArea chatId={currentCh._id} user={user} msgs={msgs} setMsg={setMsg} socket={socket}
+                <WriteArea chatId={currentCh._id} user={user} msgs={msgs} setMsg={setMsg} socketContext={socketContext}
                 target={target}></WriteArea>
             </div>
         )
@@ -145,7 +145,7 @@ const Message = ({msg, username}) => {
     )
 }
 
-const WriteArea = ({chatId, socket, target, msgs, setMsg, user}) => {
+const WriteArea = ({chatId, socketContext, target, msgs, setMsg, user}) => {
     const [text, setTxt] = useState("")
     const [sending, setSending] = useState(false)
     const [sendError, setSError] = useState(false)
@@ -160,7 +160,7 @@ const WriteArea = ({chatId, socket, target, msgs, setMsg, user}) => {
             setSending(true);
             const createdM = await sendMessage(newMsg, user);
             setMsg((msgs) => [...msgs, createdM])
-            socket.emit("send-message", createdM, target)
+            socketContext.emit("send-message", createdM, target)
             setTxt("")
             setSending(false);
         } catch (e) {

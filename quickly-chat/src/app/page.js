@@ -9,8 +9,8 @@ import useFetchContacts from "../../hooks/useFetchContacts";
 import ContactCard from "../components/ContactCard";
 import ChatCard from "../components/ChatCard";
 import MainComp from "../components/MainComp";
-import { useTargetContext } from "../../hooks/useTargetContext";
 import { v4 as uuidv4 } from 'uuid';
+import { useTargetContext } from "../../hooks/useTargetContext";
 
 export default function MainUi() {
   const [selected, setUi] = useState("chats")
@@ -23,13 +23,11 @@ export default function MainUi() {
   const [connected, setConnected] = useState(false)
   const [update, setUpdate] = useState(0)
   const {user} = useAuthContext();
-  const [socket,setSoc] = useState()
+  const [socket,setSocState] = useState()
+  const {setSoc} = useTargetContext()
   useEffect(() => {
     if (user) {
       setUsr(user)
-
-      
-      
         setConnected(true)
         const socket = io('http://localhost:3003')
         setConnected(true)
@@ -43,8 +41,8 @@ export default function MainUi() {
         socket.on("connect", connect)
         socket.on("disconnect", disconnect)
     
+      setSocState(socket)
       setSoc(socket)
-      
       return () => {
         socket.off('connect', connect);
         socket.off('disconnect', disconnect);
@@ -73,20 +71,26 @@ export default function MainUi() {
       }
     } 
     callFetch()
-  },[loggedUsr])
+  },[loggedUsr, update])
 
-  useEffect(() => {
-    if (socket) {
-      const receive = (message) => {
-        let currChats = {...chats}
-        let sender = message.senderName
+  const receive = (message) => {
+    try {
+      let currChats = {...chats}
+      let sender = message.senderName
+     
         currChats[sender].unreadCount =  currChats[sender].unreadCount + 1
         currChats[sender].lastM = message
         currChats[sender].key = uuidv4()
-        console.log(currChats)
         setChats(currChats)
-       
-      }
+      
+    } catch (e) {
+      console.log(e)
+    }
+    
+  }
+
+  useEffect(() => {
+    if (socket) {
       socket.once("receive-message", receive)
     }
   },[chats])
@@ -103,7 +107,7 @@ export default function MainUi() {
         }) : chats && selected=="chats" ? Object.keys(chats).map((el, index) => {
           console.log(el)
           return(
-            <ChatCard key={chats[el].key} name={el} lastM={chats[el].lastM} count={chats[el].unreadCount}/>
+            <ChatCard  key={chats[el].key} name={el} lastM={chats[el].lastM} count={chats[el].unreadCount}/>
           )
         }) : selected=="groups" ?  
           (

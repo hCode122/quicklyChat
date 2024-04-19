@@ -8,9 +8,9 @@ export const TargetContext = createContext()
 
     export const TargetContextProvider = ({children}) => {
         const [target, setTarget] = useState()
-        const [socket, setSoc] = useState()
+        const [socketContext, setSoc] = useState()
         return (
-            <TargetContext.Provider value={{target, setTarget, socket, setSoc}}>
+            <TargetContext.Provider value={{target, setTarget, socketContext, setSoc}}>
                 {children}
             </TargetContext.Provider>
         )
