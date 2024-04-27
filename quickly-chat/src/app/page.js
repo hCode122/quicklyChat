@@ -28,18 +28,17 @@ export default function MainUi() {
   useEffect(() => {
     if (user) {
       setUsr(user)
-        setConnected(true)
-        const socket = io('http://localhost:3003')
-        setConnected(true)
-        const connect = () => {
-          socket.emit("register", user.username, socket.id)
-        }
+      setConnected(true)
+      const socket = io('http://localhost:3003')
+      const connect = () => {
+        socket.emit("register", user.username, socket.id)
+      }
 
-        const disconnect = () => {
-          socket.emit("leave",user.token)
-        }
-        socket.on("connect", connect)
-        socket.on("disconnect", disconnect)
+      const disconnect = () => {
+        socket.emit("leave",user.token)
+      }
+      socket.on("connect", connect)
+      socket.on("disconnect", disconnect)
     
       setSocState(socket)
       setSoc(socket)

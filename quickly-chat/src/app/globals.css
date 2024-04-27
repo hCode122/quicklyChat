@@ -81,6 +81,18 @@ transition: background-color 200ms linear;
     @apply rounded-lg p-1
 }
 
+.notific-animation {
+    animation: notify 7s;
+    
+}
+
+@keyframes notify {
+    0% {top: -10%}
+    10% {top: 10%;}
+    80% {top: 10%}
+    100% {top: -20%}
+}
+
 
 
 
