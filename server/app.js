@@ -25,7 +25,7 @@ async function main() {
   }))
 }
 
-var io = require("socket.io")(3003,{
+var io = require("socket.io")("https://quicklychat.onrender.com",{
   cors: {
     origin: '*',
   }
