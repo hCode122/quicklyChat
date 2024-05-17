@@ -1,6 +1,6 @@
 const sendMessage = async (newMsg, user) => {
  
-    const message = await fetch("http://localhost:3001/api/data/message",{
+    const message = await fetch("https://quicklychat.onrender.com/api/data/message",{
         method: "POST",
         headers: {
             "accept": "Application/json",

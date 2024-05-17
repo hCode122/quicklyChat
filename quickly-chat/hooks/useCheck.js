@@ -1,7 +1,7 @@
 const useCheck = (user, target) => {
      const check = async () => {
         try {
-            const data = await fetch("http://localhost:3001/api/data/check", {
+            const data = await fetch("https://quicklychat.onrender.com/api/data/check", {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',

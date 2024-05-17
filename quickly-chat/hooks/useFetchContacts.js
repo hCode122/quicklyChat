@@ -5,7 +5,7 @@ export default function useFetchContacts () {
     
     const fetchContacts = async (token) => {
         try {
-            const data = await fetch("http://localhost:3001/api/data/contacts",{
+            const data = await fetch("https://quicklychat.onrender.com/api/data/contacts",{
             method: "GET",
             headers: {
                 'Accept': 'application/json',

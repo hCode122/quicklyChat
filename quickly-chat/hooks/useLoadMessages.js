@@ -2,7 +2,7 @@ const useLoadMessages = (user) => {
   const loadMessages = async (depth, chatId) => {
     try {
       const data = await fetch(
-        "http://localhost:3001/api/data/loadMessages",
+        "https://quicklychat.onrender.com/api/data/loadMessages",
         {
           method: "POST",
           headers: {
