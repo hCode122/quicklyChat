@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation';
 import { useTargetContext } from '../../hooks/useTargetContext';
+import Link from 'next/link';
 const ContactCard = ({name}) => { 
     const {target, setTarget} = useTargetContext()
     const router = useRouter()
@@ -10,7 +11,7 @@ const ContactCard = ({name}) => {
     }
 
     return (
-      <button onClick={handleClick}>
+      <Link href={"/chat/" + name}>
       <div className="clickable flex-initial border-b-4 border-black bg-orange-500
       flex gap-2 flex-row h-16">
         <div className="bg-userPic1 bg-white border-2 border-black rounded-2xl  w-12 h-12 flex-initial mt-2  ml-2">
@@ -27,7 +28,7 @@ const ContactCard = ({name}) => {
             
         </div>
       </div>
-      </button>
+      </Link>
    
     )
 }

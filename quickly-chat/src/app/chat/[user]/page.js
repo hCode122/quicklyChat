@@ -1,15 +1,16 @@
 'use client'
 import { useEffect, useRef, useState } from "react";
-import { useAuthContext } from "../../../hooks/useAuthContext";
-import { useTargetContext } from '../../../hooks/useTargetContext';
-import useCheck from '../../../hooks/useCheck';
-import useCreateChat from '../../../hooks/useCreateChat';
-import sendMessage from '../../../hooks/sendMessage';
-import useLoadMessages from '../../../hooks/useLoadMessages';
-import { useRouter } from "next/navigation";
+import { useAuthContext } from "../../../../hooks/useAuthContext";
+import { useTargetContext } from '../../../../hooks/useTargetContext';
+import useCheck from '../../../../hooks/useCheck';
+import useCreateChat from '../../../../hooks/useCreateChat';
+import sendMessage from '../../../../hooks/sendMessage';
+import useLoadMessages from '../../../../hooks/useLoadMessages';
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { io } from "socket.io-client";
 
 const ChatWindow = () => {
-    const {target, socketContext} = useTargetContext()
+    const target = useParams()['user']
     const [msgs, setMsg] = useState([])
     const {user} = useAuthContext()
     const [currentCh, setChat] = useState()
@@ -17,7 +18,10 @@ const ChatWindow = () => {
     const createCh = useCreateChat(user, target)
     const loadMessages = useLoadMessages(user)
     const [allowLoadMore, setLoadMore] = useState(0)
-
+    const [connected, setConnected] = useState(false)
+    const [notificationVisible, setNotificationVisible] = useState(false)
+    const [latest, setLatest] = useState()
+    const [socket, setSocket] = useState()
     const router = useRouter()
     useEffect(() => {
         (async () => {
@@ -40,20 +44,59 @@ const ChatWindow = () => {
     },[currentCh])
 
     useEffect(() => {
-        const receive = message => {
-            setMsg((msgs) => [...msgs, message]);
-        }
-        socketContext.on("receive-message", receive);
-        return () => socketContext.off("receive-message",receive);
+        if (user) {
+            setConnected(true)
+            const socket = io('http://localhost:3003')
+            const connect = () => {
+                socket.emit("register", user.username, socket.id)
+            }
+
+            const disconnect = () => {
+                socket.emit("leave",user.token)
+            }
+            socket.on("connect", connect)
+            socket.on("disconnect", disconnect)
+
+            const receive = message => {
+                if (message.senderName == target) {
+                    setMsg((msgs) => [...msgs, message]);
+                } else {
+                    setLatest(message);
+                    notify();
+                }   
+            }
+            socket.on("receive-message", receive);
+            setSocket(socket)
+            return () => {
+                socket.off('connect', connect);
+                socket.off('disconnect', disconnect);
+                socket.off("receive-message",receive);
+            }
+        }    
     }, [])
 
- 
+    const notify = () => {
+        setNotificationVisible(true)
+
+        setTimeout(() => {
+            setNotificationVisible(false)
+        }, 7000)
+    }
     
     
 
     if (user && currentCh) {
         return(
             <div className="flex bg-black-2 flex-col h-screen">
+                {
+                    notificationVisible ?
+                    <div className="flex flex-col left-50 absolute bg-black-3 notific-animation rounded-lg
+                    w-44 border-4 border-orange-500">
+                      <p className="align-left w-12 bg-black-2 font-bold bg-orange-500">{latest.senderName}</p>
+                      <p text-white text-left>{latest.text}</p>
+                    </div> : (<></>)
+                }
+                
                 <div className="border-black border-2 flex justify-between flex-initial items-center h-24">
                     <img onClick={() => router.back()} src="Images/arrow-left.svg" className='h-6 clickable3 flex-initial ml-2 mb-10'></img>
                     <p className="h-12 text-lg overflow-hidden  font-bold text-orange-500 ">{target}</p>
@@ -65,7 +108,7 @@ const ChatWindow = () => {
                 <TextArea user={user} msgs={msgs} setMsg={setMsg} loadMessages={loadMessages}
                 chatID={currentCh._id} allowLoadMore={allowLoadMore} setLoadMore={setLoadMore}></TextArea>
                 
-                <WriteArea chatId={currentCh._id} user={user} msgs={msgs} setMsg={setMsg} socketContext={socketContext}
+                <WriteArea chatId={currentCh._id} user={user} msgs={msgs} setMsg={setMsg} socketContext={socket}
                 target={target}></WriteArea>
             </div>
         )

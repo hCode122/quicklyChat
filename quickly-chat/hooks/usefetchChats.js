@@ -4,7 +4,7 @@ export default function useFetchChats() {
     
     const fetchChats = async (token) => {
         try {
-            const data = await fetch("http://localhost:3001/api/data/chats", {
+            const data = await fetch("https://quicklychat.onrender.com/api/data/chats", {
                 method: "GET",
                 headers: {
                     'Accept': 'application/json',
