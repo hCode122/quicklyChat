@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          sparse-checkout: /quickly-chat
+          sparse-checkout: quickly-chat
       - name: Detect package manager
         id: detect-package-manager
         run: |
