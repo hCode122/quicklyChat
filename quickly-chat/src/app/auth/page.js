@@ -42,24 +42,22 @@ const Login = () => {
         
     }
     return (
-        <div className='flex-0 m-auto'>
-            <form className='border-2 rounded-lg border-orange-300 flex flex-col bg-black content-center h-80 w-64' onSubmit={onSubmit}>
+        <div >
+            <form className=' flex flex-col content-center h-80 w-60' onSubmit={onSubmit}>
                 <label className="text-red-600 ml-4 flex-1"></label>
                 <div className='ml-4  flex-1 flex flex-col' title='input'>
-                    <label className='mt-2 pl-2 text-indigo-400'>User name :</label>
+                    <label className='mt-2 pl-2 text-orange-600'>User name :</label>
                     <input className='mt-2 w-52 rounded-2xl' name="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
         
-                    <label className='pt-12 pl-2 text-indigo-400'>Password :</label>
+                    <label className='pt-12 pl-2 text-orange-600'>Password :</label>
                     <input className='mt-2 w-52 rounded-2xl' name="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                    <button className='w-20 h-8 mt-8 mr-8 rounded-2xl bg-orange-400 self-end' type="submit">Submit</button>
-                    {user &&<span>{user.username}</span>}
-                </div>
+                    <span className='flex ml-2'>
+                        <Link href="/auth/signup" className="'w-20 h-8 mt-8 mr-8 border-none text-orange-700 self-end">Register</Link>
+                        <button className='w-20 h-8 mt-8 mr-8 rounded-2xl bg-orange-500 self-end' type="submit">Submit</button>
+                    </span>
+                    
 
-                <div className='flex-1 mt-2 flex flex-row justify-evenly items-center'>
-                    
-                    <a className="h-6 text-orange-600">Don't have an account? </a>
-                    <Link href="/auth/signup" className="h-6 text-orange-600 bold ">Sign In!</Link>
-                    
+                    {user &&<span>{user.username}</span>}
                 </div>
             </form>
         </div>
