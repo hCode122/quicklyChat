@@ -21,7 +21,7 @@ app.use(cors())
 main().catch((err) => console.log(err));
 async function main() {
   (await mongoose.connect(dbURI, {dbName:'Cluster0'}).then(() => {
-    app.listen(3002, () => console.log('server running...')); 
+   console.log('server running...'); 
   }))
 }
 
