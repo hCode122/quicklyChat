@@ -18,8 +18,8 @@ const ChatCard = ({name, lastM, count}) => {
                 <div className="font-bold text-xl flex-1">{name}</div>
                 <div className="pt-1 mr-2 text-sm w-8"> {time}</div>
             </div>
-            <div className="overflow-hidden flex gap-2 text flex-1"> 
-                <p className="flex-1 h-6">{lastM ? lastM.text : ""}</p> 
+            <div className="overflow-hidden w-56 flex gap-2 text flex-1"> 
+                <p className="flex-1 h-6 overflow-x-hidden">{lastM ? lastM.text : ""}</p> 
                 {count ? 
                 <p className="ml-auto mr-2 text-center rounded-full w-8 h-6
                 text-orange-500 bg-black-2 text-xs pt-1

@@ -90,10 +90,10 @@ const ChatWindow = () => {
             <div className="flex bg-black-2 flex-col h-screen">
                 {
                     notificationVisible ?
-                    <div className="flex flex-col left-50 absolute bg-black-3 notific-animation rounded-lg
-                    w-44 border-4 border-orange-500">
+                    <div className="flex flex-col absolute ml-auto mr-auto bg-black-3 
+                    notific-animation rounded-lg left-0 right-0 w-44 border-2 border-orange-500">
                       <p className="align-left w-12 bg-black-2 font-bold bg-orange-500">{latest.senderName}</p>
-                      <p text-white text-left>{latest.text}</p>
+                      <p className="text-white text-left pl-2 h-20 overflow-y-hidden pr-2 break-all">{latest.text}</p>
                     </div> : (<></>)
                 }
                 
