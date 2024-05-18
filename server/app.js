@@ -25,7 +25,7 @@ async function main() {
   }))
 }
 
-var io = require("socket.io")("0.0.0.0:3002",{
+var io = require("socket.io")(3002,{
   cors: {
     origin: '*',
   }
