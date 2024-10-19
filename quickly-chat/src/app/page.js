@@ -4,7 +4,7 @@ import { useAuthContext } from "../../hooks/useAuthContext"
 import { useRouter } from 'next/navigation'
 import { useLogout } from "../../hooks/useLogout";
 import { io } from "socket.io-client";
-import useFetchChats from "../../hooks/useFetchChats";
+import useFetchChats from "../../hooks/usefetchChats";
 import useFetchContacts from "../../hooks/useFetchContacts";
 import ContactCard from "../components/ContactCard";
 import ChatCard from "../components/ChatCard";
