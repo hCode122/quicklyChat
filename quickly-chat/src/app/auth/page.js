@@ -22,7 +22,7 @@ const Login = () => {
     async function onSubmit(event) {
         event.preventDefault();
         try {
-            await fetch("http://localhost:3001/api/auth/login",{
+            await fetch("https://quicklychat.onrender.com/api/auth/login",{
                 method: "POST"
             ,
             headers: {

@@ -9,7 +9,7 @@ const AddUsrMnu = ({user, setSMen},ref) => {
 
     const  addUser = async (contact,user) => {
         setSMen(null)
-        await fetch("http://localhost:3001/api/data/contacts",{
+        await fetch("https://quicklychat.onrender.com/api/data/contacts",{
             method: "POST",
             headers: {
                 "Accepets": "Application/json",
@@ -24,7 +24,7 @@ const AddUsrMnu = ({user, setSMen},ref) => {
 
     useEffect(() => {
         if (search.length > 0) {
-            fetch("http://localhost:3001/api/data/search", {
+            fetch("https://quicklychat.onrender.com/api/data/search", {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',

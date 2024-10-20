@@ -19,7 +19,7 @@ const Signup = () => {
         event.preventDefault();
         if (password == passwordV){
             try {
-                await fetch('http://localhost:3001/api/auth/signup', {
+                await fetch('https://quicklychat.onrender.com/api/auth/signup', {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
