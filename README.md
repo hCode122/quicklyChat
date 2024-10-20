@@ -9,5 +9,3 @@ Development is paused for the time being due to me being busy with work/collage 
 <li>    Adding the ability to block users and archive chats.
   </li>
 </ul>
-
-Try it out on: https://quickly-chat.vercel.app/
