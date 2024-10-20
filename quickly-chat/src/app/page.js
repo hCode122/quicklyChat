@@ -29,7 +29,7 @@ export default function MainUi() {
     if (user) {
       setUsr(user)
       setConnected(true)
-      const socket = io('http://localhost:3003')
+      const socket = io('https://quicklychat.onrender.com:3002')
       const connect = () => {
         socket.emit("register", user.username, socket.id)
       }
