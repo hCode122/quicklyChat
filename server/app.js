@@ -17,7 +17,10 @@ app.set('view engine', 'jade');
 
 // Database connection
 const dbURI = process.env.DB_URI;
-app.use(cors())
+app.use(cors({
+  origin: '*' // Allow all origins
+  // No credentials with wildcard origin
+}));
 main().catch((err) => console.log(err));
 
 const PORT = process.env.PORT || 3002;

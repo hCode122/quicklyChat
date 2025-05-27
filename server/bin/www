@@ -18,12 +18,11 @@ var server = http.createServer(app);
 /**
  * Create Socket.IO server attached to HTTP server
  */
-var io = require('socket.io')(server, {
+const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://your-production-domain.com'] 
-      : ['http://localhost:3000'],
+    origin: '*', // Allow all origins (not recommended for production)
     methods: ['GET', 'POST']
+    // Remove 'credentials: true' when using wildcard origin
   }
 });
 
