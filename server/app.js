@@ -28,52 +28,8 @@ async function main() {
   }))
 }
 
-var io = require("socket.io")(PORT,{
-  cors: {
-    origin: '*',
-  }
-})
-const globalUsers = new Map();
-// socket connection
-io.on("connection", (socket) => {
 
-    socket.on("register", (name, id) => {
-      socket.user = name
-      if (globalUsers.has(id)) {
-        console.log("User already exist")
-      } else {
-        globalUsers.set(name, id)
-        console.log(globalUsers)
-      }
-    })
 
-    socket.on("send-message", (message, target) => {
-      console.log("received a message, sending....")
-      const room = globalUsers.get(target)
-      socket.to(room).emit("receive-message", message)
-    })
-
-    socket.on("disconnect",() => {
-      console.log(socket.user)
-      globalUsers.delete(socket.user)
-      const date = new Date()
-      updateLastOnline(socket.user, date)
-    })
-  })
-
-const updateLastOnline = async (name,date) => {
-  try {
-    await User.updateOne({name:name}, {
-      lastOnline: 
-        date
-      
-    })
-    console.log(await User.findOne({name}))
-  } catch (e) {
-    console.log(e)
-  }
-  
-}
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -99,6 +55,18 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+app.locals.io = null; // Will be set by www file
+
+// Modify your error handler to not use views if you're not using them:
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.json({
+    error: {
+      message: err.message
+    }
+  });
 });
 
 module.exports = app;
