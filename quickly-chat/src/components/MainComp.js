@@ -50,7 +50,7 @@ const MainComp = ({ selected, setUi, children, user }) => {
                 : "base-btn col-start-1"
             }
           >
-            <img src={`${process.env.PUBLIC_URL}/images/contacts.svg`} alt="Contacts" />
+            <img className="w-14 h-14 m-auto" src="/images/contacts.svg"></img>
           </button>
 
           <button
