@@ -46,7 +46,7 @@ const ChatWindow = () => {
     useEffect(() => {
         if (user) {
             setConnected(true)
-            const socket = io('https://quicklychat.onrender.com:3002')
+            const socket = io('https://quicklychat.onrender.com')
             const connect = () => {
                 socket.emit("register", user.username, socket.id)
             }

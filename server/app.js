@@ -19,13 +19,16 @@ app.set('view engine', 'jade');
 const dbURI = process.env.DB_URI;
 app.use(cors())
 main().catch((err) => console.log(err));
+
+const PORT = process.env.PORT || 3002;
+
 async function main() {
   (await mongoose.connect(dbURI, {dbName:'Cluster0'}).then(() => {
    console.log('server running...'); 
   }))
 }
 
-var io = require("socket.io")(3002,{
+var io = require("socket.io")(PORT,{
   cors: {
     origin: '*',
   }
